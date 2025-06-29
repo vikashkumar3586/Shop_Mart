@@ -10,7 +10,7 @@ A full-stack e-commerce application built with React.js and Node.js.
 - Stripe payment integration
 - Address management
 - Responsive design with TailwindCSS
-- Admin panel for product and order management
+- Seller panel for product and order management
 - Image upload with Cloudinary
 - Real-time cart updates
 
@@ -70,7 +70,7 @@ MONGO_URI=mongodb://localhost:27017/shop_mart
 # JWT Secret (use a strong random string)
 JWT_SECRET=your_super_secure_jwt_secret_key_here_2024
 
-# Admin Credentials
+# Seller Credentials
 SELLER_EMAIL=admin@shopmart.com
 SELLER_PASSWORD=admin123
 
@@ -192,10 +192,10 @@ Shop_Mart/
 └── README.md               # Documentation
 ```
 
-## 🔑 Default Admin Access
+## 🔑 Default Seller Access
 
-After setup, access admin panel:
-- **URL:** `http://localhost:5173/admin`
+After setup, access seller panel:
+- **URL:** `http://localhost:5173/seller`
 - **Email:** `admin@shopmart.com`
 - **Password:** `admin123`
 
@@ -208,15 +208,13 @@ After setup, access admin panel:
 
 ### Products
 - `GET /api/product/get` - Get all products
-- `POST /api/product/add` - Add new product (Admin only)
-- `PUT /api/product/update/:id` - Update product (Admin only)
-- `DELETE /api/product/delete/:id` - Delete product (Admin only)
+- `POST /api/product/add` - Add new product (Seller only)
 
 ### Orders
 - `POST /api/order/cod` - Place COD order
 - `POST /api/order/online` - Place online payment order
 - `GET /api/order/user` - Get user orders
-- `GET /api/order/seller` - Get all orders (Admin only)
+- `GET /api/order/seller` - Get all orders (Seller only)
 
 ### Address
 - `POST /api/address/add` - Add new address
