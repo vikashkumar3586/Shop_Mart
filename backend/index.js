@@ -26,7 +26,6 @@ app.use(cors({
 }));
 app.use(cookieParser());
 
-
 //Api Endpoints
 app.use("/images", express.static("uploads"));
 app.use('/api/user', userRoutes);
@@ -35,6 +34,13 @@ app.use('/api/product', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/order', orderRoutes);
 app.use('/api/address', addressRoutes);
+
+// app.get('/', (req, res) => {
+//     req.clearCookie('token');
+//     req.clearCookie('sellerToken');
+//     res.send('Welcome to Shop Mart API');   
+// });
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

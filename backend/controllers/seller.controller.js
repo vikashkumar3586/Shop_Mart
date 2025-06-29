@@ -1,32 +1,38 @@
 import jwt from 'jsonwebtoken';
+
 export const sellerLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
-        if(
-            password === process.env.SELLER_PASSWORD &&
-            email === process.env.SELLER_EMAIL
-        ){
-            const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        
+        // FIXED: Add input validation
+        if (!email || !password) {
+            return res.status(400).json({ 
+                message: 'Email and password are required', 
+                success: false 
+            });
+        }
+        
+        if (password === process.env.SELLER_PASSWORD && email === process.env.SELLER_EMAIL) {
+            // FIXED: Add role to token
+            const token = jwt.sign({ email, role: 'seller' }, process.env.JWT_SECRET, { expiresIn: '7d' });
+            
             res.cookie('sellerToken', token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: process.env.NODE_ENV === 'production' ? "none" : 'Strict',
+                sameSite: process.env.NODE_ENV === 'production' ? "none" : 'strict',
                 maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
             });
-            res
-            .status(200)
-            .json({ message: 'Login successful', success: true });
+            
+            res.status(200).json({ message: 'Login successful', success: true });
         } else {
-            return res
-            .status(400)
-            .json({ message: 'Invalid email or password', success: false });
+            return res.status(400).json({ message: 'Invalid email or password', success: false });
         }
 
     } catch (error) {
         console.error('Error logging in seller:', error);
-        res.status(500).json({ message: 'Server error', error });
+        res.status(500).json({ message: 'Server error', success: false }); // FIXED: Add success field
     }
-}
+};
 
 //logout seller : /api/seller/logout
 export const sellerLogout = (req, res) => {
@@ -36,20 +42,63 @@ export const sellerLogout = (req, res) => {
             secure: process.env.NODE_ENV === 'production',
             sameSite: process.env.NODE_ENV === 'production' ? "none" : 'strict'
         });
+        
         res.status(200).json({ message: 'Seller logged out successfully', success: true });
     } catch (error) {
         console.error('Error logging out seller:', error);
-        res.status(500).json({ message: 'Internal Server error' });
+        res.status(500).json({ message: 'Internal Server error', success: false }); // FIXED: Add success field
     }
-    
-}
+};
 
 //check auth seller : /api/seller/is-auth
 export const isAuthSeller = (req, res) => {
     try {
-                res.json({ message: 'Seller is authenticated', success: true });
+        const token = req.cookies.sellerToken;
+        
+        if (!token) {
+            return res.status(401).json({ 
+                message: 'No token provided', 
+                success: false 
+            });
+        }
+        
+        // FIXED: Actually verify the token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        if (decoded.email === process.env.SELLER_EMAIL) {
+            res.status(200).json({ 
+                message: 'Seller is authenticated', 
+                success: true,
+                seller: { email: decoded.email }
+            });
+        } else {
+            res.status(401).json({ 
+                message: 'Invalid token', 
+                success: false 
+            });
+        }
+        
     } catch (error) {
         console.error('Error checking seller authentication:', error);
-        res.status(500).json({ message: 'Internal Server error' });
+        
+        // FIXED: Handle specific JWT errors
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({ 
+                message: 'Invalid token', 
+                success: false 
+            });
+        }
+        
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ 
+                message: 'Token expired', 
+                success: false 
+            });
+        }
+        
+        res.status(500).json({ 
+            message: 'Internal Server error', 
+            success: false 
+        });
     }
-}
+};
