@@ -166,31 +166,6 @@ MONGO_URI=mongodb://localhost:27017/shop_mart
 3. Copy **Publishable Key** and **Secret Key** (use test keys for development)
 4. Update `backend/.env` with these keys
 
-## 📁 Project Structure
-
-```
-Shop_Mart/
-├── backend/                 # Node.js API
-│   ├── controllers/         # Route handlers
-│   ├── models/             # MongoDB schemas
-│   ├── routes/             # API routes
-│   ├── middlewares/        # Auth & validation
-│   ├── config/             # Database config
-│   ├── public/images/      # Uploaded images
-│   ├── .env                # Environment variables
-│   ├── package.json        # Dependencies
-│   └── index.js            # Entry point
-├── frontend/               # React.js app
-│   ├── src/
-│   │   ├── components/     # Reusable components
-│   │   ├── pages/          # Route components
-│   │   ├── context/        # State management
-│   │   └── assets/         # Static files
-│   ├── .env                # Frontend environment
-│   ├── package.json        # Dependencies
-│   └── index.html          # Entry HTML
-└── README.md               # Documentation
-```
 
 ## 🔑 Default Seller Access
 
@@ -279,49 +254,6 @@ npm run lint        # Run ESLint
 # Check if using test keys for development
 # Ensure proper currency format
 ```
-
-## 🚀 Deployment
-
-### Backend (Railway/Heroku/DigitalOcean)
-1. Set environment variables on platform
-2. Update `MONGO_URI` to production database
-3. Use production Stripe keys
-4. Set `NODE_ENV=production`
-
-### Frontend (Vercel/Netlify)
-1. Update `VITE_BACKEND_URL` to production API URL
-2. Build and deploy
-3. Set up custom domain (optional)
-
-## 📝 Environment Variables Reference
-
-### Backend (.env)
-```env
-PORT=5000
-NODE_ENV=development
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-SELLER_EMAIL=admin@shopmart.com
-SELLER_PASSWORD=admin123
-CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
-CLOUDINARY_API_KEY=your_cloudinary_api_key
-CLOUDINARY_API_SECRET=your_cloudinary_api_secret
-STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
-STRIPE_SECRET_KEY=your_stripe_secret_key
-```
-
-### Frontend (.env)
-```env
-VITE_BACKEND_URL=http://localhost:5000
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
 
 ## 📄 License
 
