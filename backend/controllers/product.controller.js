@@ -1,41 +1,38 @@
 import Product from '../models/product.model.js';
-// import { v2 as cloudinary } from 'cloudinary';
 
 //add product : /api/product/add-product
 export const addProduct = async (req, res) => {
     try {
         const { name, description, price, offerPrice, category } = req.body;
-        const image = req.files?.map((file) => file.filename);
-        if (!name || !price || !offerPrice || !description  || !category || !image || image.length === 0) {
+        if (!name || !price || !offerPrice || !description || !category) {
             return res.status(400).json({ message: 'All fields are required', success: false });
         }
-
-        // const images = req.files;
+        let imageUrls = [];
         
-        // let imageUrl = await Promise.all(
-        //     images.map(async (item) => {
-        //         let result = await cloudinary.uploader.upload(item.path,{
-        //             resource_type: "image",
-        //         });
-        //         return result.secure_url;
-        //     })
-        // );
-        await Product.create({
+        if (req.files && req.files.length > 0) {
+            imageUrls = req.files.map(file => file.path);
+        }
+        
+        const product = await Product.create({
             name,
             description,
-            price,
-            offerPrice,
+            price: Number(price),
+            offerPrice: Number(offerPrice),
             category,
-            image,
-            // image: imageUrl,
-            
+            image: imageUrls,
         });
         res.status(201).json({ message: 'Product added successfully', success: true });
+        
     } catch (error) {
-    
-        res.status(500).json({ message: 'Internal server error', error });
+        console.error('Error adding product:', error);
+        res.status(500).json({ 
+            message: 'Internal server error', 
+            success: false,
+            error: error.message 
+        });
     }
 };
+
 
 //get products : /api/product/get
 export const getProducts = async (req, res) => {

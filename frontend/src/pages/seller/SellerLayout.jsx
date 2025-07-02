@@ -5,7 +5,7 @@ import { assets } from '../../assets/assets';
 import { NavLink, Outlet } from 'react-router-dom';
 
 const SellerLayout = () => {
-  const { isSeller,setIsSeller,navigate } = useContext(AppContext);
+  const { isSeller,setIsSeller,navigate ,sellerLogout} = useContext(AppContext);
 
 
     const sidebarLinks = [
@@ -23,11 +23,16 @@ const SellerLayout = () => {
                 </div>
                 <div className="flex items-center gap-5 text-gray-500">
                     <p>Hi! Admin</p>
-                    <button onClick={() => {setIsSeller(false);
+                    {/* <button onClick={() => {setIsSeller(false);
                         navigate("/");
 
                     }} 
-                    className='border rounded-full text-sm px-4 py-1 cursor-pointer'>Logout</button>
+                    className='border rounded-full text-sm px-4 py-1 cursor-pointer'>Logout</button> */}
+                    <button 
+                    onClick={sellerLogout} 
+                    className='border rounded-full text-sm px-4 py-1 cursor-pointer hover:bg-gray-100'>
+                        Logout
+                    </button>
                 </div>
             </div>
             <div className="flex">

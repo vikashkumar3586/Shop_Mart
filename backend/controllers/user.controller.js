@@ -58,7 +58,7 @@ export const loginUser = async (req, res) => {
         if (!email || !password) {
             return res.status(400).json({ message: 'Please fill all fields', success: false });
         }
-
+ 
         // Find user by email
         const user = await User.findOne({ email });
         if (!user) {
@@ -93,19 +93,26 @@ export const loginUser = async (req, res) => {
         res.status(500).json({ message: 'Internal Server error' });
     }
 }
-
-//logout user : /api/user/logout
 export const logoutUser = async (req, res) => {
     try {
+        // Clear the JWT cookie
         res.clearCookie('token', {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? "none" : 'strict'
+            secure: process.env.NODE_ENV === 'production' ? "none" : 'strict',
+            sameSite: 'strict',
+            path: '/'
         });
-        res.json({ message: 'User logged out successfully', success: true });
+        console.log('User logged out successfully');
+        res.status(200).json({ 
+            message: 'Logout successful', 
+            success: true 
+        });
     } catch (error) {
-        console.error('Error logging out user:', error);
-        res.status(500).json({ message: 'Internal Server error' });
+        console.error('Logout error:', error);
+        res.status(500).json({ 
+            message: 'Internal server error', 
+            success: false 
+        });
     }
 };
 

@@ -3,6 +3,13 @@ import Address from "../models/address.model.js";
 export const addAddress = async (req, res) => {
     try {
         const userId = req.user;
+        if (!userId) {
+            return res.status(401).json({ 
+                message: "Please login to add address", 
+                success: false,
+                requiresLogin: true  // Flag to trigger redirect
+            });
+        }
         const {address} = req.body;
         await Address.create({
             ...address,

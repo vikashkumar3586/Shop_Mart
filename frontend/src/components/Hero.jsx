@@ -2,7 +2,7 @@ import { assets } from '../assets/assets';
 import { Link } from 'react-router-dom';
 const Hero = () => {
   return (
-    <div className="relative">
+    <div className="relative z-0">
       <img src={assets.main_banner_bg} alt="" className='hidden md:block w-full' />
       <img src={assets.main_banner_bg_sm} alt="" className='md:hidden w-full' />
       <div className='absolute inset-0 flex flex-col items-center 

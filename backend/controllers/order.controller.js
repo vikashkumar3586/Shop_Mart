@@ -44,15 +44,11 @@ export const placeOrderCOD = async (req, res) => {
 };
 
 //Place order stripe payment : api/order/online
-//Place order stripe payment : api/order/online
 export const placeOrderOnline = async (req, res) => {
     try {
         const { items, address } = req.body;
         const userId = req.user;
         const { origin } = req.headers;
-
-        console.log('Online order request:', { userId, items, address });
-
         if (!items || !address) {
             return res.status(400).json({ message: "Items and address are required", success: false });
         }
@@ -61,8 +57,7 @@ export const placeOrderOnline = async (req, res) => {
         let amount = 0;
 
         for (const item of items) {
-            const product = await Product.findById(item.product);
-            
+            const product = await Product.findById(item.product);   
             if (!product) {
                 return res.status(404).json({
                     message: `Product not found: ${item.product}`,
@@ -91,15 +86,12 @@ export const placeOrderOnline = async (req, res) => {
             isPaid: false,
         });
 
-        console.log('Order created:', order._id);
-
         //Stripe gateway initialization
         const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY);
 
         //create line item for stripe
         const lineItems = productData.map((item) => {
-            const unitAmountINR = Math.round(item.price * 100); // Convert ₹ to paisa
-            console.log(`Item: ${item.name}, Price: ₹${item.price}, Unit Amount (paisa): ${unitAmountINR}`);
+            const unitAmountINR = Math.round(item.price * 100);
             
             return {
                 price_data: {
@@ -112,9 +104,6 @@ export const placeOrderOnline = async (req, res) => {
                 quantity: item.quantity,
             };
         });
-
-        console.log('Line items for Stripe:', lineItems);
-
         //create stripe session
         const session = await stripeInstance.checkout.sessions.create({
             line_items: lineItems,
@@ -126,9 +115,6 @@ export const placeOrderOnline = async (req, res) => {
                 userId: userId.toString(),
             },
         });
-
-        console.log('Stripe session created:', session.id);
-
         res.status(201).json({ 
             message: "Order placed successfully", 
             success: true,
@@ -136,7 +122,6 @@ export const placeOrderOnline = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error in placeOrderOnline:', error);
         res.status(500).json({ 
             message: "Internal server error", 
             error: error.message 

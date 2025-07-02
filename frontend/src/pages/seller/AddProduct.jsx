@@ -13,33 +13,81 @@ const AddProduct = () => {
     const [category, setCategory] = useState('');
     const [offerPrice, setOfferPrice] = useState('');
 
+    // const handleSubmit = async (e) => {
+    //     try{
+    //         e.preventDefault();
+    //         const formData = new FormData();
+    //         formData.append('name', name);
+    //         formData.append('description', description);
+    //         formData.append('price', price);
+    //         formData.append('offerPrice', offerPrice);
+    //         formData.append('category', category);
+    //         for (let i = 0; i < files.length; i++) {
+    //             // formData.append('image', files[i]); 
+    //             formData.append('image', files[i]);
+    //         }
+    //         const {data} = await axios.post('/api/product/add-product', formData);
+    //         if(data.success){
+    //            toast.success(data.message);
+    //             setName('');
+    //             setDescription('');
+    //             setPrice('');
+    //             setOfferPrice('');
+    //             setCategory('');
+    //             setFiles([]);            
+    //         }else{
+    //            toast.error(data.message);
+    //         }
+    //     }catch(error){
+    //         console.error("Error uploading product:", error);
+    //     }
+    // }
     const handleSubmit = async (e) => {
-        try{
-            e.preventDefault();
-            const formData = new FormData();
-            formData.append('name', name);
-            formData.append('description', description);
-            formData.append('price', price);
-            formData.append('offerPrice', offerPrice);
-            formData.append('category', category);
-            for (let i = 0; i < files.length; i++) {
+    try {
+        e.preventDefault();
+        
+        // Validation
+        if (!name || !description || !price || !offerPrice || !category) {
+            toast.error('Please fill all fields');
+            return;
+        }
+        
+        if (files.length === 0) {
+            toast.error('Please select at least one image');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('description', description);
+        formData.append('price', price);
+        formData.append('offerPrice', offerPrice);
+        formData.append('category', category);
+        
+        for (let i = 0; i < files.length; i++) {
+            if (files[i]) { // Check if file exists
                 formData.append('image', files[i]); 
             }
-            const {data} = await axios.post('/api/product/add-product', formData);
-            if(data.success){
-               toast.success(data.message);
-                setName('');
-                setDescription('');
-                setPrice('');
-                setOfferPrice('');
-                setCategory('');
-                setFiles([]);            
-            }else{
-               toast.error(data.message);
-            }
-        }catch(error){
-            console.error("Error uploading product:", error);
         }
+        
+        const {data} = await axios.post('/api/product/add-product', formData);
+        
+        if (data.success) {
+            toast.success(data.message);
+            // Reset form
+            setName('');
+            setDescription('');
+            setPrice('');
+            setOfferPrice('');
+            setCategory('');
+            setFiles([]);            
+        } else {
+            toast.error(data.message);
+        }
+    } catch (error) {
+        console.error("Error uploading product:", error);
+        toast.error('Failed to upload product');
+    }
     }
 
     return (

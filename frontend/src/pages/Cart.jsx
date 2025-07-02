@@ -2,8 +2,6 @@ import { useContext, useEffect, useState } from "react"
 import { AppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
 import { use } from "react";
-
-
 const Cart = () => {
     const { products, 
         navigate, 
@@ -14,7 +12,10 @@ const Cart = () => {
         updateCartItem,
         axios,
         user,
-        setCartItems } = useContext(AppContext);
+        setCartItems,
+        setShowUserLogin,
+        clearCart,
+     } = useContext(AppContext);
 
     //state to store the products available in the cart
     const [cartArray, setCartArray] = useState([]);
@@ -65,9 +66,15 @@ const Cart = () => {
 
     const placeOrder = async() => {
         try {
+            //check if user is logged in
+            if (!user) {
+                toast.error('Please login to place order');
+                setShowUserLogin(true);
+                return;
+            }
+
             if (!selectedAddress) {
                 return toast.error("Please select an address");
-                
             }
             //place order with cod
             if (paymentOption === 'COD') {
@@ -80,7 +87,7 @@ const Cart = () => {
                 });
                 if (data.success) {
                     toast.success(data.message);
-                    setCartItems({});
+                    await clearCart();
                     navigate('/my-orders');
                 } else {
                     toast.error(data.message);
@@ -102,7 +109,12 @@ const Cart = () => {
 
         } catch (error) {
             console.error("Error placing order:", error);
+            if (error.response?.status === 401) {
+            toast.error('Session expired. Please login again');
+            setShowUserLogin(true);
+        } else {
             toast.error(error.message);
+        }
         }
     }
 
@@ -127,7 +139,10 @@ const Cart = () => {
                                 navigate(`/product/${product.category.toLowerCase()}/${product._id}`);
                                 scrollTo(0, 0);
                             }} className="cursor-pointer w-24 h-24 flex items-center justify-center border border-gray-300 rounded">
-                                <img className="max-w-full h-full object-cover" src={`http://localhost:5000/images/${product.image[0]}`} alt={product.name} />
+                                <img className="max-w-full h-full object-cover" 
+                                // src={`http://localhost:5000/images/${product.image[0]}`}
+                                src={product.image[0]} 
+                                alt={product.name} />
                             </div>
                             <div>
                                 <p className="hidden md:block font-semibold">{product.name}</p>

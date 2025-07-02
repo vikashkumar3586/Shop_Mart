@@ -15,19 +15,18 @@ const AppContextProvider = ({ children }) => {
     const [products, setProducts] = useState([]);
     const [cartItems, setCartItems] = useState({});
     const [searchQuery, setSearchQuery] = useState("");
+    const [isUserAuth, setIsUserAuth] = useState(false);
+    const [isSellerAuth, setIsSellerAuth] = useState(false);
 
     //check seller status
-    const fetchSeller=async()=>{
-        try{
-            const{data}= await axios.get('/api/seller/is-auth');
-            if(data.success){
-                setIsSeller(true);
-            }
-            else{
-                setIsSeller(false);
-            }
+    const fetchSeller = async () => {
+        try {
+            const { data } = await axios.get('/api/seller/is-auth');
+            setIsSeller(true);
+            setIsSellerAuth(true);
         } catch (error) {
-            toast.error(error.message);
+            setIsSeller(false);
+            setIsSellerAuth(false);
         }
     };
 
@@ -35,24 +34,46 @@ const AppContextProvider = ({ children }) => {
     const fetchUser = async () => {
         try {
             const { data } = await axios.get('/api/user/is-auth');
-            if (data.success) {
-                setUser(data.user);
-            } else {
-                setUser(null);
+            setUser(data.user);
+            setIsUserAuth(true);
+            if (data.user) {
+                const cartResponse = await axios.get('/api/cart/get');
+                if (cartResponse.data.success) {
+                    setCartItems(cartResponse.data.cartItems);
+                }
             }
         } catch (error) {
-            toast.error(error.message);
+            setUser(null);
+            setIsUserAuth(false);
+            setCartItems({});
+        }
+    };
+
+    const loadUserCart = async () => {
+        try {
+            if (!user) return;
+
+            const { data } = await axios.get('/api/cart/get');
+            if (data.success) {
+                setCartItems(data.cartItems);
+                console.log('✅ Cart loaded from database:', data.cartItems);
+            }
+        } catch (error) {
+            console.error('❌ Load cart error:', error);
+            if (error.response?.status === 401) {
+                console.log('User not authenticated, skipping cart load');
+            }
         }
     };
 
     //fetch all products data
     const fetchProducts = async () => {
-        try{
-            const {data} = await axios.get('/api/product/list');
-            if(data.success) {
+        try {
+            const { data } = await axios.get('/api/product/list');
+            if (data.success) {
                 setProducts(data.products);
             }
-            else{
+            else {
                 toast.error(data.message);
             }
         } catch (error) {
@@ -61,22 +82,41 @@ const AppContextProvider = ({ children }) => {
     };
 
     //add product to cart
-    const addToCart = (itemId) => {
-        let cartData=structuredClone(cartItems ||{});
-        if (cartData[itemId]) {
-            cartData[itemId] += 1;
-        } else {     
-            cartData[itemId] = 1;
+    const addToCart = async (itemId) => {
+        try {
+            let cartData = structuredClone(cartItems || {});
+            if (cartData[itemId]) {
+                cartData[itemId] += 1;
+            } else {
+                cartData[itemId] = 1;
+            }
+            setCartItems(cartData);
+            if (user) {
+                await axios.post('/api/cart/update', { cartItems: cartData });
+            }
+            toast.success("Item added to cart");
+        } catch (error) {
+            toast.error('Failed to add item to cart');
         }
-        setCartItems(cartData);
-        toast.success("Item added to cart")
     };
     //update cart item
-    const updateCartItem = (itemId, quantity) => {
-        let cartData = structuredClone(cartItems);
-        cartData[itemId] = quantity;
-        setCartItems(cartData);
-        toast.success("Cart updated successfully");
+    const updateCartItem = async (itemId, quantity) => {
+        try {
+            let cartData = structuredClone(cartItems);
+            if (quantity <= 0) {
+                delete cartData[itemId];
+            } else {
+                cartData[itemId] = quantity;
+            }
+            setCartItems(cartData);
+            if (user) {
+                await axios.post('/api/cart/update', { cartItems: cartData });
+            }
+            toast.success("Cart updated successfully");
+        } catch (error) {
+            console.error('Update cart error:', error);
+            toast.error('Failed to update cart');
+        }
     };
     //total cart items
     const cartCount = () => {
@@ -92,56 +132,122 @@ const AppContextProvider = ({ children }) => {
         let totalAmount = 0;
         for (const items in cartItems) {
             let itemInfo = products.find((product) => product._id === items);
-            if(cartItems[items]>0){
+            if (cartItems[items] > 0) {
                 totalAmount += cartItems[items] * itemInfo.offerPrice;
             }
         }
-        return Math.floor(totalAmount* 100) / 100; 
+        return Math.floor(totalAmount * 100) / 100;
     };
 
     //remove product from cart
-    const removeFromCart = (itemId) => {
-        let cartData = structuredClone(cartItems);
-        if (cartData[itemId]) {
-            cartData[itemId]-= 1;
-            if (cartData[itemId] === 0) {
-                delete cartData[itemId];
-            }
-            setCartItems(cartData);
-            toast.success("Item removed from cart");
-        }
-        
-    };
-    useEffect(() => {
-        const updateCart= async () => {
-            try{
-                const {data}= await axios.post('/api/cart/update', { cartItems });
-                if (!data.success) {
-                    toast.error(data.message);
+    const removeFromCart = async (itemId) => {
+        try {
+            let cartData = structuredClone(cartItems);
+            if (cartData[itemId]) {
+                cartData[itemId] -= 1;
+                if (cartData[itemId] === 0) {
+                    delete cartData[itemId];
                 }
-            } catch (error) {
-                toast.error(error.message);
+                setCartItems(cartData);
+                if (user) {
+                    await axios.post('/api/cart/update', { cartItems: cartData });
+                }
+                toast.success("Item removed from cart");
             }
-        };
-        if (user){
-            updateCart();
+        } catch (error) {
+            console.error('Remove from cart error:', error);
+            toast.error('Failed to remove item from cart');
         }
-    }, [cartItems]);
+    };
+    //logout user
+    const logout = async () => {
+        try {
+            const { data } = await axios.post('/api/user/logout');
+
+            if (data.success) {
+                setUser(null);
+                setIsUserAuth(false);
+                setCartItems({});
+                navigate('/');
+                toast.success('Logged out successfully');
+            } else {
+                toast.error(data.message || 'Logout failed');
+            }
+        } catch (error) {
+            setUser(null);
+            setIsUserAuth(false);
+            setCartItems({});
+            navigate('/');
+            toast.error('Logout failed');
+        }
+    };
+
+
+    const sellerLogout = async () => {
+        try {
+            const { data } = await axios.post('/api/seller/logout');
+            if (data.success) {
+                setIsSeller(false);
+                navigate('/');
+                toast.success('Logged out successfully');
+            } else {
+                toast.error(data.message || 'Logout failed');
+            }
+        } catch (error) {
+            setIsSeller(false);
+            navigate('/');
+            toast.error('Logout failed');
+        }
+    };
+
+    useEffect(() => {
+        if (user && Object.keys(cartItems).length > 0) {
+            const timeoutId = setTimeout(async () => {
+                try {
+                    await axios.post('/api/cart/update', { cartItems });
+                } catch (error) {
+                    console.error('Cart auto-save error:', error);
+                }
+            }, 2000);
+
+            return () => clearTimeout(timeoutId);
+        }
+    }, [cartItems, user]);
 
     useEffect(() => {
         fetchProducts();
         fetchSeller();
         fetchUser();
-    },[]);
+    }, []);
+    useEffect(() => {
+    if (user) {
+        loadUserCart();
+    } else {
+        // Clear cart when user logs out
+        setCartItems({});
+    }
+}, [user]);
+    const clearUserCart = async () => {
+        try {
+            setCartItems({});
 
-
-    const value = { 
-        navigate, 
-        user, 
-        setUser, 
-        isSeller, 
-        setIsSeller, 
-        showUserLogin, 
+            if (user) {
+                const { data } = await axios.delete('/api/cart/clear');
+                if (data.success) {
+                    console.log('✅ Cart cleared from database');
+                }
+            }
+        } catch (error) {
+            console.error('Clear cart error:', error);
+        }
+    };
+    const value = {
+        navigate,
+        user,
+        setUser,
+        isSeller,
+        setIsSeller,
+        showUserLogin,
         setShowUserLogin,
         products,
         addToCart,
@@ -156,6 +262,14 @@ const AppContextProvider = ({ children }) => {
         axios,
         fetchProducts,
         fetchSeller,
+        logout,
+        sellerLogout,
+        isUserAuth,
+        setIsUserAuth,
+        isSellerAuth,
+        setIsSellerAuth,
+        clearUserCart,
+        loadUserCart,
 
     };
     return (

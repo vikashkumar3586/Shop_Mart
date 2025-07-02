@@ -3,8 +3,6 @@ import jwt from 'jsonwebtoken';
 export const sellerLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
-        
-        // FIXED: Add input validation
         if (!email || !password) {
             return res.status(400).json({ 
                 message: 'Email and password are required', 
@@ -30,23 +28,31 @@ export const sellerLogin = async (req, res) => {
 
     } catch (error) {
         console.error('Error logging in seller:', error);
-        res.status(500).json({ message: 'Server error', success: false }); // FIXED: Add success field
+        res.status(500).json({ message: 'Server error', success: false });
     }
 };
 
-//logout seller : /api/seller/logout
-export const sellerLogout = (req, res) => {
+export const sellerLogout = async (req, res) => {
     try {
         res.clearCookie('sellerToken', {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? "none" : 'strict'
+            sameSite: process.env.NODE_ENV === 'production' ? "none" : 'strict',
+            path: '/'
         });
         
-        res.status(200).json({ message: 'Seller logged out successfully', success: true });
+        console.log('Seller logged out successfully');
+        
+        res.status(200).json({ 
+            message: 'Seller logout successful', 
+            success: true 
+        });
     } catch (error) {
-        console.error('Error logging out seller:', error);
-        res.status(500).json({ message: 'Internal Server error', success: false }); // FIXED: Add success field
+        console.error('Seller logout error:', error);
+        res.status(500).json({ 
+            message: 'Internal server error', 
+            success: false 
+        });
     }
 };
 

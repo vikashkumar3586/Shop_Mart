@@ -3,6 +3,7 @@ import { dummyOrders } from "../assets/assets";
 import { useContext } from "react";
 import { AppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
+import placeholder from "../assets/placeholder.png"; 
 
 const MyOrders = () => {
   const [myOrders, setMyOrders] = useState([]);
@@ -50,7 +51,10 @@ const MyOrders = () => {
               <div key={index} className={`relative bg-white text-gray-800 ${order.items.length !== index + 1 && "border-b"} border-gray-300 flex flex-col md:flex-row md:items-center justify-between p-4 py-5 w-full max-w-4xl`}>
                 <div className="flex items-center mb-4 md:mb-0">
                   <div className="p-4 rounded-lg">
-                    <img src={`http://localhost:5000/images/${item.product.image[0]}`} alt={item.product.name} className="w-16 h-16" />
+                    <img 
+                    // src={`http://localhost:5000/images/${item.product.image[0]}`}
+                     src={item.product.image[0] || placeholder}
+                    alt={item.product.name} className="w-16 h-16" />
                   </div>
                   <div>
                     <h2 className="text-xl font-medium">{item.product.name}</h2>
@@ -76,5 +80,4 @@ const MyOrders = () => {
     </div>
   )
 }
-
 export default MyOrders
