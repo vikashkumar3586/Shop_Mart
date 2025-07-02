@@ -48,12 +48,3 @@ backend/public/images/
 *.mp4
 *.webm
 *.m4v
-
-# Other large files
-*.zip
-*.rar
-*.tar.gz
-*.dmg
-*.iso
-*.exe
-*.msi
