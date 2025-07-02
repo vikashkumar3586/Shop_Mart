@@ -45,6 +45,5 @@ backend/uploads/
 backend/images/
 backend/public/images/
 # Large media files
-*.mp4
 *.webm
 *.m4v
