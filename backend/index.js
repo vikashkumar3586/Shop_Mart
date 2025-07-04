@@ -14,13 +14,23 @@ import addressRoutes from './routes/address.routes.js';
 const app = express();
 
 connectDB();
-const allowedOrigins=["http://localhost:5173", "https://shop-mart-iox7.vercel.app"];
+// const allowedOrigins=["http://localhost:5173", "https://shop-mart-iox7.vercel.app"];
+const corsOptions = {
+  origin: [
+    "http://localhost:5173",
+    "https://shop-mart-iox7.vercel.app",
+    process.env.FRONTEND_URL
+  ],
+  credentials: true,
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
+};
+
 
 //middlewares
 app.use(express.json());
-app.use(cors({
-    origin: allowedOrigins, credentials: true
-}));
+app.use(cors(corsOptions));
 app.use(cookieParser());
 
 //Api Endpoints
@@ -30,6 +40,7 @@ app.get('/', (req, res) => {
         error: false
     });
 });
+
 app.use("/images", express.static("uploads"));
 app.use('/api/user', userRoutes);
 app.use('/api/seller', sellerRoutes);
