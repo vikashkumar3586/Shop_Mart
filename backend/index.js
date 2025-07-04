@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import mongoose, { connect } from 'mongoose';
 import dotenv from 'dotenv';
 import { connectDB } from './config/connectDB.js';
 dotenv.config();
@@ -25,6 +24,11 @@ app.use(cors({
 app.use(cookieParser());
 
 //Api Endpoints
+app.get('/', (req, res) => {
+    activeStatus = true;
+    error: false;
+    res.send('Welcome to Shop Mart API');
+});
 app.use("/images", express.static("uploads"));
 app.use('/api/user', userRoutes);
 app.use('/api/seller', sellerRoutes);
