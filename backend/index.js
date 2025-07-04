@@ -25,9 +25,10 @@ app.use(cookieParser());
 
 //Api Endpoints
 app.get('/', (req, res) => {
-    activeStatus = true;
-    error: false;
-    res.send('Welcome to Shop Mart API');
+    res.send({
+        activeStatus: true,
+        error: false
+    });
 });
 app.use("/images", express.static("uploads"));
 app.use('/api/user', userRoutes);
