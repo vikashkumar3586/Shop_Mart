@@ -16,11 +16,12 @@ const app = express();
 connectDB();
 // const allowedOrigins=["http://localhost:5173", "https://shop-mart-iox7.vercel.app"];
 const corsOptions = {
-  origin: [
-    "http://localhost:5173",
-    "https://shop-mart-iox7.vercel.app",
-    process.env.FRONTEND_URL
-  ],
+//   origin: [
+//     "http://localhost:5173",
+//     "https://shop-mart-iox7.vercel.app",
+//     process.env.FRONTEND_URL
+//   ],
+    origin: true,
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -32,6 +33,7 @@ const corsOptions = {
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use(cookieParser());
+app.options('*', cors(corsOptions));
 
 //Api Endpoints
 app.get('/', (req, res) => {
