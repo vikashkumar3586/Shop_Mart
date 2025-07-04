@@ -14,11 +14,13 @@ import addressRoutes from './routes/address.routes.js';
 const app = express();
 
 connectDB();
-// const allowedOrigins=["https://shop-mart-rho.vercel.app"];
+const allowedOrigins=["http://localhost:5173", "https://shop-mart-iox7.vercel.app"];
 
 //middlewares
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: allowedOrigins, credentials: true
+}));
 app.use(cookieParser());
 
 //Api Endpoints
