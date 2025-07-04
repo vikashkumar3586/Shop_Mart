@@ -12,7 +12,7 @@ import ProductCategory from './pages/ProductCategory';
 import Footer from './components/Footer';
 import { Toaster } from 'react-hot-toast';
 import AddAddress from './pages/AddAddress';
-import SellerLayout from './pages/seller/sellerLayout';
+import SellerLayout from './pages/seller/SellerLayout';
 import SellerLogin from './components/seller/SellerLogin';
 import AddProduct from './pages/seller/AddProduct';
 import ProductList from './pages/seller/ProductList';

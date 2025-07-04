@@ -23,11 +23,6 @@ const SellerLayout = () => {
                 </div>
                 <div className="flex items-center gap-5 text-gray-500">
                     <p>Hi! Admin</p>
-                    {/* <button onClick={() => {setIsSeller(false);
-                        navigate("/");
-
-                    }} 
-                    className='border rounded-full text-sm px-4 py-1 cursor-pointer'>Logout</button> */}
                     <button 
                     onClick={sellerLogout} 
                     className='border rounded-full text-sm px-4 py-1 cursor-pointer hover:bg-gray-100'>
