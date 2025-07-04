@@ -14,6 +14,7 @@ import addressRoutes from './routes/address.routes.js';
 const app = express();
 
 connectDB();
+<<<<<<< HEAD
 const corsOptions = {
   origin: [
     "http://localhost:5173",
@@ -21,16 +22,31 @@ const corsOptions = {
     "https://shop-mart-iox7.vercel.app",
     process.env.FRONTEND_URL
   ].filter(Boolean),
+=======
+// const allowedOrigins=["http://localhost:5173", "https://shop-mart-iox7.vercel.app"];
+const corsOptions = {
+//   origin: [
+//     "http://localhost:5173",
+//     "https://shop-mart-iox7.vercel.app",
+//     process.env.FRONTEND_URL
+//   ],
+    origin: true,
+>>>>>>> refs/remotes/origin/main
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
 };
+<<<<<<< HEAD
+=======
+
+>>>>>>> refs/remotes/origin/main
 
 //middlewares
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use(cookieParser());
+app.options('*', cors(corsOptions));
 
 //Api Endpoints
 app.get('/', (req, res) => {
@@ -39,6 +55,7 @@ app.get('/', (req, res) => {
         error: false
     });
 });
+
 app.use("/images", express.static("uploads"));
 app.use('/api/user', userRoutes);
 app.use('/api/seller', sellerRoutes);

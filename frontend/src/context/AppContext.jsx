@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
+axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 export const AppContext = createContext(null);
 
 const AppContextProvider = ({ children }) => {
@@ -18,12 +18,51 @@ const AppContextProvider = ({ children }) => {
     const [isSellerAuth, setIsSellerAuth] = useState(false);
 
     //check seller status
+    // const fetchSeller = async () => {
+    //     try {
+    //         const { data } = await axios.get('/api/seller/is-auth');
+    //         setIsSeller(true);
+    //         setIsSellerAuth(true);
+    //     } catch (error) {
+    //         setIsSeller(false);
+    //         setIsSellerAuth(false);
+    //     }
+    // };
+
+    // //check user status
+    // const fetchUser = async () => {
+    //     try {
+    //         const { data } = await axios.get('/api/user/is-auth');
+    //         setUser(data.user);
+    //         setIsUserAuth(true);
+    //         if (data.user) {
+    //             const cartResponse = await axios.get('/api/cart/get');
+    //             if (cartResponse.data.success) {
+    //                 setCartItems(cartResponse.data.cartItems);
+    //             }
+    //         }
+    //     } catch (error) {
+    //         setUser(null);
+    //         setIsUserAuth(false);
+    //         setCartItems({});
+    //     }
+    // };
+
+    //check seller status
     const fetchSeller = async () => {
         try {
             const { data } = await axios.get('/api/seller/is-auth');
-            setIsSeller(true);
-            setIsSellerAuth(true);
+            if (data.success) {
+                setIsSeller(true);
+                setIsSellerAuth(true);
+            } else {
+                setIsSeller(false);
+                setIsSellerAuth(false);
+            }
         } catch (error) {
+            if (error.response?.status !== 401) {
+                console.error('Error fetching seller:', error);
+            }
             setIsSeller(false);
             setIsSellerAuth(false);
         }
@@ -33,20 +72,51 @@ const AppContextProvider = ({ children }) => {
     const fetchUser = async () => {
         try {
             const { data } = await axios.get('/api/user/is-auth');
-            setUser(data.user);
-            setIsUserAuth(true);
-            if (data.user) {
-                const cartResponse = await axios.get('/api/cart/get');
-                if (cartResponse.data.success) {
-                    setCartItems(cartResponse.data.cartItems);
+            if (data.success) {
+                setUser(data.user);
+                setIsUserAuth(true);
+                if (data.user) {
+                    const cartResponse = await axios.get('/api/cart/get');
+                    if (cartResponse.data.success) {
+                        setCartItems(cartResponse.data.cartItems);
+                    }
                 }
+            } else {
+                setUser(null);
+                setIsUserAuth(false);
+                setCartItems({});
             }
         } catch (error) {
+            if (error.response?.status !== 401) {
+                console.error('Error fetching user:', error);
+            }
             setUser(null);
             setIsUserAuth(false);
             setCartItems({});
         }
     };
+
+    //fetch all products data
+    const fetchProducts = async () => {
+        try {
+            const { data } = await axios.get('/api/product/list');
+            if (data.success) {
+                setProducts(data.products);
+            } else {
+                console.error('❌ Products fetch failed:', data.message);
+                toast.error(data.message || 'Failed to fetch products');
+                setProducts([]);
+            }
+        } catch (error) {
+            console.error('❌ Fetch products error:', error);
+            const errorMessage = error.response?.data?.message ||
+                error.message ||
+                'Failed to fetch products';
+            toast.error(errorMessage);
+            setProducts([]);
+        }
+    };
+
 
     const loadUserCart = async () => {
         try {
@@ -66,19 +136,19 @@ const AppContextProvider = ({ children }) => {
     };
 
     //fetch all products data
-    const fetchProducts = async () => {
-        try {
-            const { data } = await axios.get('/api/product/list');
-            if (data.success) {
-                setProducts(data.products);
-            }
-            else {
-                toast.error(data.message);
-            }
-        } catch (error) {
-            toast.error(error.message);
-        }
-    };
+    // const fetchProducts = async () => {
+    //     try {
+    //         const { data } = await axios.get('/api/product/list');
+    //         if (data.success) {
+    //             setProducts(data.products);
+    //         }
+    //         else {
+    //             toast.error(data.message);
+    //         }
+    //     } catch (error) {
+    //         toast.error(error.message);
+    //     }
+    // };
 
     //add product to cart
     const addToCart = async (itemId) => {
@@ -219,13 +289,13 @@ const AppContextProvider = ({ children }) => {
         fetchUser();
     }, []);
     useEffect(() => {
-    if (user) {
-        loadUserCart();
-    } else {
-        // Clear cart when user logs out
-        setCartItems({});
-    }
-}, [user]);
+        if (user) {
+            loadUserCart();
+        } else {
+            // Clear cart when user logs out
+            setCartItems({});
+        }
+    }, [user]);
     const clearUserCart = async () => {
         try {
             setCartItems({});
