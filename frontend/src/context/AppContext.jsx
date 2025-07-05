@@ -296,7 +296,7 @@ const AppContextProvider = ({ children }) => {
             setCartItems({});
         }
     }, [user]);
-    const clearUserCart = async () => {
+    const clearCart = async () => {
         try {
             setCartItems({});
 
@@ -337,8 +337,9 @@ const AppContextProvider = ({ children }) => {
         setIsUserAuth,
         isSellerAuth,
         setIsSellerAuth,
-        clearUserCart,
+        clearCart,
         loadUserCart,
+        
 
     };
     return (

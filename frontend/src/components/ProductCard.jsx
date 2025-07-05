@@ -1,64 +1,96 @@
-import { useContext,useState } from 'react';
+import { useContext, useState } from 'react';
 import { AppContext } from '../context/AppContext';
 import { assets } from '../assets/assets';
-const ProductCard = ({ product }) => {
-    const { navigate,addToCart,cartItems,removeFromCart } = useContext(AppContext);
-    return product && (
-        <div onClick={()=> {
-            if (product._id) {
-            navigate(`/product/${product.category.toLowerCase()}/${product._id}`);
-        } else {
-            // Optionally, show a warning or do nothing
-            console.warn("Product id is missing!", product);
-        }}}
-        className="border border-gray-500/20 rounded-md md:px-4 px-3 py-2 bg-white min-w-56 max-w-56 w-full">
-            <div className="group cursor-pointer flex items-center justify-center px-2">
-                <img 
-                className="group-hover:scale-105 transition max-w-26 md:max-w-36" 
-                // src={`http://localhost:5000/images/${product.image[0]}`} 
-                src={product.image[0]}
-                alt={product.name} />
-            </div>
-            <div className="text-gray-500/60 text-sm">
-                <p>{product.category}</p>
-                <p className="text-gray-700 font-medium text-lg truncate w-full">{product.name}
-                </p>
 
-                <div className='flex items-center gap-0.5'>
-                    {
-                        Array(5)
-                        .fill('')
-                        .map((_, i) => (
-                            <img
-                                key={i}
-                                src={i < 4 ? assets.star_icon : assets.star_dull_icon} alt='rating'
-                                className='w-3 md:3.5'
-                            />
-                        ))}
-                    <p>(4)</p>
+const ProductCard = ({ product }) => {
+    const { navigate, addToCart, cartItems, removeFromCart } = useContext(AppContext);
+    
+    return product && (
+        <div 
+            onClick={() => {
+                if (product._id) {
+                    navigate(`/product/${product.category.toLowerCase()}/${product._id}`);
+                } else {
+                    console.warn("Product id is missing!", product);
+                }
+            }}
+            className="border border-gray-200 rounded-lg p-3 bg-white w-full hover:shadow-md transition-shadow cursor-pointer"
+        >
+            {/* ✅ Product Image */}
+            <div className="group flex items-center justify-center mb-3">
+                <img 
+                    className="group-hover:scale-105 transition-transform duration-300 w-full h-32 sm:h-36 md:h-40 object-cover rounded" 
+                    src={product.image[0]}
+                    alt={product.name} 
+                />
+            </div>
+            
+            {/* ✅ Product Details */}
+            <div className="space-y-2">
+                {/* Category */}
+                <p className="text-gray-500 text-xs uppercase tracking-wide">{product.category}</p>
+                
+                {/* Product Name */}
+                <p className="text-gray-700 font-medium text-sm sm:text-base truncate">{product.name}</p>
+
+                {/* Rating */}
+                <div className='flex items-center gap-1'>
+                    {Array(5).fill('').map((_, i) => (
+                        <img
+                            key={i}
+                            src={i < 4 ? assets.star_icon : assets.star_dull_icon} 
+                            alt='rating'
+                            className='w-3 h-3'
+                        />
+                    ))}
+                    <span className="text-xs text-gray-500 ml-1">(4)</span>
                 </div>
 
-                
-                <div className="flex items-end justify-between mt-3">
-                    <p className="md:text-xl text-base font-medium text-indigo-500">
-                        &#8377;{product.offerPrice}{" "} <span className="text-gray-500/60 md:text-sm text-xs line-through">&#8377;{product.price}</span>
-                    </p>
-                    <div className="text-indigo-500"
-                        onClick={(e) => e.stopPropagation()}>
+                {/* Price and Cart */}
+                <div className="flex items-center justify-between mt-3">
+                    {/* Price */}
+                    <div className="flex flex-col">
+                        <span className="text-sm sm:text-base font-semibold text-indigo-600">
+                            ₹{product.offerPrice}
+                        </span>
+                        {product.price !== product.offerPrice && (
+                            <span className="text-xs text-gray-400 line-through">
+                                ₹{product.price}
+                            </span>
+                        )}
+                    </div>
+                    
+                    {/* Cart Button */}
+                    <div 
+                        className="text-indigo-500"
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         {!cartItems?.[product._id] ? (
-                            <button className="flex items-center justify-center gap-1 bg-indigo-100 border border-indigo-300 md:w-[80px] w-[64px] h-[34px] rounded text-indigo-600 font-medium" onClick={() => addToCart(product._id)} >
-                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M.583.583h2.333l1.564 7.81a1.17 1.17 0 0 0 1.166.94h5.67a1.17 1.17 0 0 0 1.167-.94l.933-4.893H3.5m2.333 8.75a.583.583 0 1 1-1.167 0 .583.583 0 0 1 1.167 0m6.417 0a.583.583 0 1 1-1.167 0 .583.583 0 0 1 1.167 0" stroke="#615fff" stroke-linecap="round" stroke-linejoin="round" />
+                            <button 
+                                className="flex items-center justify-center gap-1 bg-indigo-100 border border-indigo-300 px-2 py-1.5 rounded text-indigo-600 font-medium text-xs sm:text-sm hover:bg-indigo-200 transition-colors" 
+                                onClick={() => addToCart(product._id)}
+                            >
+                                <svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M.583.583h2.333l1.564 7.81a1.17 1.17 0 0 0 1.166.94h5.67a1.17 1.17 0 0 0 1.167-.94l.933-4.893H3.5m2.333 8.75a.583.583 0 1 1-1.167 0 .583.583 0 0 1 1.167 0m6.417 0a.583.583 0 1 1-1.167 0 .583.583 0 0 1 1.167 0" stroke="#615fff" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
-                                Add
+                                <span className="hidden sm:inline">Add</span>
+                                <span className="sm:hidden">+</span>
                             </button>
                         ) : (
-                            <div className="flex items-center justify-center gap-2 md:w-20 w-16 h-[34px] bg-indigo-500/25 rounded select-none">
-                                <button onClick={() => removeFromCart(product._id)} className="cursor-pointer text-md px-2 h-full" >
+                            <div className="flex items-center justify-center bg-indigo-100 rounded overflow-hidden">
+                                <button 
+                                    onClick={() => removeFromCart(product._id)} 
+                                    className="px-2 py-1.5 hover:bg-indigo-200 transition-colors text-indigo-600 font-medium"
+                                >
                                     -
                                 </button>
-                                <span className="w-5 text-center">{cartItems[product._id]}</span>
-                                <button onClick={() => addToCart(product._id)} className="cursor-pointer text-md px-2 h-full" >
+                                <span className="px-2 py-1.5 text-indigo-600 font-medium text-sm min-w-8 text-center">
+                                    {cartItems[product._id]}
+                                </span>
+                                <button 
+                                    onClick={() => addToCart(product._id)} 
+                                    className="px-2 py-1.5 hover:bg-indigo-200 transition-colors text-indigo-600 font-medium"
+                                >
                                     +
                                 </button>
                             </div>

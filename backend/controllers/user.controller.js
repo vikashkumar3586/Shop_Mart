@@ -29,7 +29,7 @@ export const registerUser = async (req, res) => {
         // await user.save();
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-        res.cookie('token', token, {
+        res.cookie('userToken', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: process.env.NODE_ENV === 'production' ? "none" : 'strict',
@@ -72,7 +72,7 @@ export const loginUser = async (req, res) => {
         }
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-        res.cookie('token', token, {
+        res.cookie('userToken', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: process.env.NODE_ENV === 'production' ? "none" : 'strict',
@@ -96,10 +96,10 @@ export const loginUser = async (req, res) => {
 export const logoutUser = async (req, res) => {
     try {
         // Clear the JWT cookie
-        res.clearCookie('token', {
+        res.clearCookie('userToken', {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production' ? "none" : 'strict',
-            sameSite: 'strict',
+            secure: process.env.NODE_ENV === 'production' ,
+            sameSite: process.env.NODE_ENV === 'production' ? "none" : 'strict',
             path: '/'
         });
         console.log('User logged out successfully');
@@ -121,7 +121,10 @@ export const isAuthUser = async (req, res) => {
     try {
         const userId = req.user;
         if (!userId) {
-            return res.status(401).json({ message: 'Unauthorized', success: false });
+            return res.status(401).json({ 
+                message: 'Unauthorized', 
+                success: false 
+            });
         }
         const user = await User.findById(userId).select('-password');
         res.json({success: true, user });

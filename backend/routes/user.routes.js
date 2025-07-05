@@ -5,6 +5,6 @@ import { authUser } from '../middlewares/authUser.js';
 const router = express.Router();
 router.post('/register', registerUser);
 router.post('/login', loginUser);
-router.post('/logout', authUser, logoutUser);
 router.get('/is-auth', authUser, isAuthUser);
+router.post('/logout', authUser, logoutUser);
 export default router;

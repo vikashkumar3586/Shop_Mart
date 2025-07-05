@@ -1,5 +1,5 @@
 
-import { useState, useContext, useEffect } from "react";   
+import { useState, useContext, useEffect } from "react";
 import { AppContext } from "../context/AppContext";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -7,14 +7,14 @@ import { assets } from "../assets/assets";
 const ProductDetails = () => {
 
 
-    const {products, addToCart, navigate} = useContext(AppContext);
-    const {id}=useParams();
-     const [thumbnail, setThumbnail] = useState(null);
+    const { products, addToCart, navigate } = useContext(AppContext);
+    const { id } = useParams();
+    const [thumbnail, setThumbnail] = useState(null);
     const product = products.find((product) => product._id === id);
-   
+
     useEffect(() => {
-    setThumbnail(product?.image[0] ? product.image[0] : null);
-}, [product]);
+        setThumbnail(product?.image[0] ? product.image[0] : null);
+    }, [product]);
 
     return product && (
         <div className="mt-16">
@@ -22,7 +22,7 @@ const ProductDetails = () => {
                 <Link to="/">Home</Link> /
                 <Link to="/products">Products</Link> /
                 <Link to={`/products/${product.category.toLowerCase()}`}>{" "}
-                {product.category}</Link>
+                    {product.category}</Link>
                 {" "} /
                 <span className="text-indigo-500"> {product.name}</span>
             </p>
@@ -32,18 +32,18 @@ const ProductDetails = () => {
                     <div className="flex flex-col gap-3">
                         {product.image.map((image, index) => (
                             <div key={index} onClick={() => setThumbnail(image)} className="border max-w-24 border-gray-500/30 rounded overflow-hidden cursor-pointer" >
-                                <img 
-                        
-                                src={image}
-                                alt={`Thumbnail ${index + 1}`} />
+                                <img
+
+                                    src={image}
+                                    alt={`Thumbnail ${index + 1}`} />
                             </div>
                         ))}
                     </div>
 
                     <div className="border border-gray-500/30 max-w-100 rounded overflow-hidden">
-                        <img 
-                        src={thumbnail}
-                        alt="Selected product" />
+                        <img
+                            src={thumbnail}
+                            alt="Selected product" />
                     </div>
                 </div>
 
@@ -51,11 +51,9 @@ const ProductDetails = () => {
                     <h1 className="text-3xl font-medium">{product.name}</h1>
 
                     <div className="flex items-center gap-0.5 mt-1">
-                        {Array(5).fill('').map((_, i) => 
-                        product.rating >
-                        (
+                        {Array(5).fill('').map((_, i) => (
                             <img
-                                src={i<4? assets.star_icon : assets.star_dull_icon}
+                                src={i < 4 ? assets.star_icon : assets.star_dull_icon}
                                 alt="star"
                                 key={i}
                                 className="w-3 md:w-4"
@@ -84,8 +82,8 @@ const ProductDetails = () => {
                         <button onClick={() => {
                             addToCart(product._id);
                             navigate("/cart");
-                        }} 
-                        className="w-full py-3.5 cursor-pointer font-medium bg-indigo-500 text-white hover:bg-indigo-600 transition" >
+                        }}
+                            className="w-full py-3.5 cursor-pointer font-medium bg-indigo-500 text-white hover:bg-indigo-600 transition" >
                             Buy now
                         </button>
                     </div>

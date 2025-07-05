@@ -5,7 +5,7 @@ import { AppContext } from '../../context/AppContext';
 import toast from 'react-hot-toast';
 
 const AddProduct = () => {
-    const {axios} = useContext(AppContext);
+    const {axios,fetchProducts} = useContext(AppContext);
     const [files, setFiles] = useState([]);
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
@@ -74,6 +74,10 @@ const AddProduct = () => {
         
         if (data.success) {
             toast.success(data.message);
+            // await fetchProducts();
+            if (fetchProducts) {
+                await fetchProducts();
+            }
             // Reset form
             setName('');
             setDescription('');

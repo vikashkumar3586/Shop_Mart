@@ -31,7 +31,6 @@ const corsOptions = {
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use(cookieParser());
-app.options('*', cors(corsOptions));
 
 //Api Endpoints
 app.get('/', (req, res) => {
@@ -40,7 +39,6 @@ app.get('/', (req, res) => {
         error: false
     });
 });
-
 app.use("/images", express.static("uploads"));
 app.use('/api/user', userRoutes);
 app.use('/api/seller', sellerRoutes);

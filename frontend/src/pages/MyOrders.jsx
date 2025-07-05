@@ -51,7 +51,7 @@ const MyOrders = () => {
                 <div className="flex items-center mb-4 md:mb-0">
                   <div className="p-4 rounded-lg">
                     <img 
-                    // src={`http://localhost:5000/images/${item.product.image[0]}`}
+                    
                      src={item.product.image[0] || placeholder}
                     alt={item.product.name} className="w-16 h-16" />
                   </div>
