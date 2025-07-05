@@ -22,11 +22,28 @@ import Loading from './components/Loading';
 
 const App = () => {
 
-  const { isSeller, showUserLogin } = useContext(AppContext);
+  const { 
+    isSeller,
+    showUserLogin,
+    isAuthLoading,
+    isLoading,
+  } = useContext(AppContext);
   const isSellerPath = useLocation().pathname.includes("seller");
+
+   if (isAuthLoading) {
+    return <Loading message="Checking authentication..." />;
+  }
 
   return (
     <div className='text-default min-h-screen'>
+      {isLoading && (
+        <div className="fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center z-50">
+          <div className="flex flex-col items-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-indigo-600 mb-4"></div>
+            <p className="text-gray-600">Loading...</p>
+          </div>
+        </div>
+      )}
       {isSellerPath ? null : <Navbar />}
       {showUserLogin ? <Auth /> : null}
       <Toaster />
@@ -41,10 +58,8 @@ const App = () => {
           <Route path="/my-orders" element={<MyOrders />} />
           <Route path="/loader" element={<Loading />} />
           <Route path="/add-address" element={<AddAddress />} />
-          
-
           <Route path="/seller" element={isSeller ? <SellerLayout /> : <SellerLogin />}>
-            <Route index  element={isSeller ? <AddProduct /> : null} />
+            <Route index element={isSeller ? <AddProduct /> : null} />
             <Route path="product-list" element={isSeller ? <ProductList /> : null} />
             <Route path="orders" element={isSeller ? <Orders /> : null} />
           </Route>

@@ -28,7 +28,10 @@ const SellerLogin = () => {
                 toast.error(data.message);
             }
         }catch(error){
-            toast.error(error.message );
+            const errorMessage = error.response?.data?.message || 
+                        error.message || 
+                        'Login failed, Please enter correct credentials';
+    toast.error(errorMessage);
         }
     };
   return !isSeller &&(

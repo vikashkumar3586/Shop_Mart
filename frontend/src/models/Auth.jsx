@@ -6,10 +6,12 @@ const Auth = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const { setShowUserLogin,setUser,axios,navigate } = useContext(AppContext);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { setShowUserLogin, setUser, axios, navigate, setIsUserAuth } = useContext(AppContext);
 
 
     const submitHandler = async (e) => {
+        setIsSubmitting(true);
        try{
         e.preventDefault();
         const {data} = await axios.post(`/api/user/${state}`, {
@@ -21,14 +23,28 @@ const Auth = () => {
             toast.success(data.message);
             navigate("/");
             setUser(data.user);
+            setIsUserAuth(true);
             setShowUserLogin(false);
         }
         else{
             toast.error(data.message);
         }     
        }catch(error){
-        toast.error(error.message);
-       }
+        if (error.response) {
+            const message = error.response.data?.message || 'Login failed';
+            toast.error(message);
+        } else if (error.request) {
+            toast.error('Network error. Please check your connection.');
+        } else {
+            toast.error('Something went wrong. Please try again.');
+        }
+        
+        if (import.meta.env.DEV) {
+            console.error('Auth error:', error);
+        }
+       }finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -45,12 +61,18 @@ const Auth = () => {
                 {state === "register" && (
                     <div className="w-full">
                         <p>Name</p>
-                        <input onChange={(e) => setName(e.target.value)} value={name} placeholder="type here" className="border border-gray-200 rounded w-full p-2 mt-1 outline-indigo-500" type="text" required />
+                        <input 
+                        onChange={(e) => setName(e.target.value)} 
+                        value={name} 
+                        placeholder="type here" 
+                        className="border border-gray-200 rounded w-full p-2 mt-1 outline-indigo-500" type="text" required
+                        disabled={isSubmitting}  />
                     </div>
                 )}
                 <div className="w-full ">
                     <p>Email</p>
-                    <input onChange={(e) => setEmail(e.target.value)} value={email} placeholder="type here" className="border border-gray-200 rounded w-full p-2 mt-1 outline-indigo-500" type="email" required />
+                    <input onChange={(e) => setEmail(e.target.value)} value={email} placeholder="type here" className="border border-gray-200 rounded w-full p-2 mt-1 outline-indigo-500" type="email" required 
+                    disabled={isSubmitting}/>
                 </div>
                 <div className="w-full ">
                     <p>Password</p>
@@ -68,8 +90,19 @@ const Auth = () => {
                         </span>
                     </p>
                 )}
-                <button className="bg-indigo-500 hover:bg-indigo-600 transition-all text-white w-full py-2 rounded-md cursor-pointer">
-                    {state === "register" ? "Create Account" : "Login"}
+              <button 
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="bg-indigo-500 hover:bg-indigo-600 disabled:bg-indigo-300 disabled:cursor-not-allowed transition-all text-white w-full py-2 rounded-md flex items-center justify-center"
+                >
+                    {isSubmitting ? (
+                        <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                            {state === "register" ? "Creating..." : "Logging in..."}
+                        </>
+                    ) : (
+                        state === "register" ? "Create Account" : "Login"
+                    )}
                 </button>
             </form>
         </div>

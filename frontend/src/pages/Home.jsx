@@ -13,7 +13,6 @@ const Home = () => {
     const loadProducts = async () => {
       try {
         await fetchProducts();
-        console.log('✅ Products loaded on Home page');
       } catch (error) {
         console.error('❌ Failed to load products on Home page:', error);
       }

@@ -42,9 +42,7 @@ export const sellerLogout = async (req, res) => {
             sameSite: process.env.NODE_ENV === 'production' ? "none" : 'strict',
             path: '/'
         });
-        
-        console.log('Seller logged out successfully');
-        
+                
         res.status(200).json({ 
             message: 'Seller logout successful', 
             success: true 

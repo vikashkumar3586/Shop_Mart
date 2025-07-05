@@ -68,7 +68,7 @@ export const loginUser = async (req, res) => {
         // Check password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ message: 'Invalid credentials', success: false });
+            return res.status(400).json({ message: 'Invalid email or password', success: false });
         }
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
@@ -102,7 +102,6 @@ export const logoutUser = async (req, res) => {
             sameSite: process.env.NODE_ENV === 'production' ? "none" : 'strict',
             path: '/'
         });
-        console.log('User logged out successfully');
         res.status(200).json({ 
             message: 'Logout successful', 
             success: true 

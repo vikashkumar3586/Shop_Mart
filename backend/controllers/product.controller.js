@@ -4,7 +4,6 @@ import Product from '../models/product.model.js';
 export const addProduct = async (req, res) => {
     try {
         const { name, description, price, offerPrice, category } = req.body;
-        console.log(req.body);
         if (!name || !price || !offerPrice || !description || !category) {
             return res.status(400).json({ message: 'All fields are required', success: false });
         }
