@@ -64,60 +64,172 @@ const Cart = () => {
         }
     }, [products, cartItems]);
 
-    const placeOrder = async() => {
-        try {
-            //check if user is logged in
-            if (!user) {
-                toast.error('Please login to place order');
-                setShowUserLogin(true);
-                return;
-            }
+    // const placeOrder = async() => {
+    //     try {
+    //         //check if user is logged in
+    //         if (!user) {
+    //             toast.error('Please login to place order');
+    //             setShowUserLogin(true);
+    //             return;
+    //         }
 
-            if (!selectedAddress) {
-                return toast.error("Please select an address");
+    //         if (!selectedAddress) {
+    //             return toast.error("Please select an address");
+    //         }
+    //         //place order with cod
+    //         if (paymentOption === 'COD') {
+    //             const { data } = await axios.post('/api/order/cod', {
+    //                 items: cartArray.map(item => ({
+    //                     product: item._id,
+    //                     quantity: item.quantity
+    //                 })),
+    //                 address: selectedAddress._id,
+    //             });
+    //             if (data.success) {
+    //                 toast.success(data.message);
+    //                 await clearCart();
+    //                 navigate('/my-orders');
+    //             } else {
+    //                 toast.error(data.message);
+    //             }
+    //         }
+    //         //place order with online payment
+    //         else{
+    //             const { data } = await axios.post('/api/order/online', {
+    //                 items: cartArray.map((item) => ({
+    //                     product: item._id,
+    //                     quantity: item.quantity
+    //                 })),
+    //                 address: selectedAddress._id,
+    //             });
+    //             if (data.success) {
+    //                 window.location.replace(data.url);
+    //         }
+    //     }
+
+    //     } catch (error) {
+    //         console.error("Error placing order:", error);
+    //         if (error.response?.status === 401) {
+    //         toast.error('Session expired. Please login again');
+    //         setShowUserLogin(true);
+    //     } else {
+    //         toast.error(error.message);
+    //     }
+    //     }
+    // }
+// ...existing code...
+
+const placeOrder = async() => {
+    try {
+        //check if user is logged in
+        if (!user) {
+            toast.error('Please login to place order');
+            setShowUserLogin(true);
+            return;
+        }
+
+        if (!selectedAddress) {
+            return toast.error("Please select an address");
+        }
+        
+        //place order with cod
+        if (paymentOption === 'COD') {
+            const { data } = await axios.post('/api/order/cod', {
+                items: cartArray.map(item => ({
+                    product: item._id,
+                    quantity: item.quantity
+                })),
+                address: selectedAddress._id,
+            });
+            if (data.success) {
+                toast.success(data.message);
+                await clearCart();
+                navigate('/my-orders');
+            } else {
+                toast.error(data.message);
             }
-            //place order with cod
-            if (paymentOption === 'COD') {
-                const { data } = await axios.post('/api/order/cod', {
-                    items: cartArray.map(item => ({
-                        product: item._id,
-                        quantity: item.quantity
-                    })),
-                    address: selectedAddress._id,
-                });
-                if (data.success) {
-                    toast.success(data.message);
-                    await clearCart();
-                    navigate('/my-orders');
-                } else {
-                    toast.error(data.message);
-                }
-            }
-            //place order with online payment
-            else{
-                const { data } = await axios.post('/api/order/online', {
-                    items: cartArray.map((item) => ({
-                        product: item._id,
-                        quantity: item.quantity
-                    })),
-                    address: selectedAddress._id,
-                });
-                if (data.success) {
-                    window.location.replace(data.url);
+        }
+        // ✅ UPDATED: Replace Stripe with Razorpay
+        else {
+            const { data } = await axios.post('/api/order/online', {
+                items: cartArray.map((item) => ({
+                    product: item._id,
+                    quantity: item.quantity
+                })),
+                address: selectedAddress._id,
+            });
+            
+            if (data.success) {
+                // ✅ NEW: Razorpay integration
+                const options = {
+                    key: data.key, // Razorpay key from backend
+                    amount: data.amount, // Amount in paise
+                    currency: data.currency,
+                    name: "Shop Mart",
+                    description: "Order Payment",
+                    image: "/logo.png", // Optional: Your logo
+                    order_id: data.orderId, // Razorpay order ID
+                    handler: async (response) => {
+                        // ✅ Payment success - verify payment
+                        try {
+                            const verifyResult = await axios.post('/api/order/verify-payment', {
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                                orderDbId: data.orderDbId
+                            });
+
+                            if (verifyResult.data.success) {
+                                toast.success("Payment successful!");
+                                await clearCart();
+                                navigate("/my-orders");
+                            } else {
+                                toast.error("Payment verification failed");
+                            }
+                        } catch (error) {
+                            console.error("Payment verification error:", error);
+                            toast.error("Payment verification failed");
+                        }
+                    },
+                    prefill: {
+                        name: `${selectedAddress.firstName} ${selectedAddress.lastName}`,
+                        email: selectedAddress.email,
+                        contact: selectedAddress.phone
+                    },
+                    notes: {
+                        address: `${selectedAddress.street}, ${selectedAddress.city}`
+                    },
+                    theme: {
+                        color: "#6366f1" // Indigo color to match your theme
+                    },
+                    modal: {
+                        ondismiss: () => {
+                            toast.error("Payment cancelled");
+                        }
+                    }
+                };
+
+                // ✅ Create Razorpay instance and open payment modal
+                const rzp = new window.Razorpay(options);
+                rzp.open();
+                
+            } else {
+                toast.error(data.message || "Failed to initiate payment");
             }
         }
 
-        } catch (error) {
-            console.error("Error placing order:", error);
-            if (error.response?.status === 401) {
+    } catch (error) {
+        console.error("Error placing order:", error);
+        if (error.response?.status === 401) {
             toast.error('Session expired. Please login again');
             setShowUserLogin(true);
         } else {
-            toast.error(error.message);
-        }
+            toast.error(error.response?.data?.message || error.message || "Something went wrong");
         }
     }
+}
 
+// ...rest of your existing code...
 
     return products.length > 0 && cartItems ? (
         <div className="flex flex-col md:flex-row py-16 max-w-6xl w-full px-6 mx-auto">

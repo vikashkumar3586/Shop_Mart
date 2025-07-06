@@ -2,8 +2,8 @@ import Order from "../models/order.model.js";
 import Product from "../models/product.model.js";
 import dotenv from "dotenv";
 dotenv.config();
-import stripe from "stripe";
-
+// ✅ CHANGED: Replace stripe with razorpay
+import Razorpay from "razorpay";
 
 //Place order COD : api/order/cod
 export const placeOrderCOD = async (req, res) => {
@@ -43,17 +43,16 @@ export const placeOrderCOD = async (req, res) => {
     }
 };
 
-//Place order stripe payment : api/order/online
+// ✅ UPDATED: Place order with Razorpay payment : api/order/online
 export const placeOrderOnline = async (req, res) => {
     try {
         const { items, address } = req.body;
         const userId = req.user;
-        const { origin } = req.headers;
+        
         if (!items || !address) {
             return res.status(400).json({ message: "Items and address are required", success: false });
         }
 
-        let productData = [];
         let amount = 0;
 
         for (const item of items) {
@@ -64,13 +63,6 @@ export const placeOrderOnline = async (req, res) => {
                     success: false
                 });
             }
-
-            productData.push({
-                name: product.name,
-                price: product.offerPrice,
-                quantity: item.quantity,
-            });
-
             amount += product.offerPrice * item.quantity;
         }
 
@@ -86,44 +78,75 @@ export const placeOrderOnline = async (req, res) => {
             isPaid: false,
         });
 
-        //Stripe gateway initialization
-        const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY);
-
-        //create line item for stripe
-        const lineItems = productData.map((item) => {
-            const unitAmountINR = Math.round(item.price * 100);
-            
-            return {
-                price_data: {
-                    currency: 'inr', // Keep INR
-                    product_data: {
-                        name: item.name,
-                    },
-                    unit_amount: unitAmountINR, // FIXED: Full price in paisa
-                },
-                quantity: item.quantity,
-            };
+        // ✅ NEW: Razorpay instance initialization
+        const razorpayInstance = new Razorpay({
+            key_id: process.env.RAZORPAY_KEY_ID,
+            key_secret: process.env.RAZORPAY_KEY_SECRET,
         });
-        //create stripe session
-        const session = await stripeInstance.checkout.sessions.create({
-            line_items: lineItems,
-            mode: 'payment',
-            success_url: `${origin}/loader?next=/my-orders`,
-            cancel_url: `${origin}/cart`,
-            metadata: {
+
+        // ✅ NEW: Create Razorpay order
+        const razorpayOrder = await razorpayInstance.orders.create({
+            amount: amount * 100, // Razorpay expects amount in paise (INR * 100)
+            currency: 'INR',
+            receipt: order._id.toString(),
+            notes: {
                 orderId: order._id.toString(),
                 userId: userId.toString(),
-            },
+            }
         });
+
         res.status(201).json({ 
-            message: "Order placed successfully", 
+            message: "Order created successfully", 
             success: true,
-            url: session.url 
+            orderId: razorpayOrder.id,
+            amount: razorpayOrder.amount,
+            currency: razorpayOrder.currency,
+            key: process.env.RAZORPAY_KEY_ID,
+            orderDbId: order._id
         });
 
     } catch (error) {
+        console.error('Razorpay order creation error:', error);
         res.status(500).json({ 
             message: "Internal server error", 
+            error: error.message 
+        });
+    }
+};
+
+// ✅ NEW: Verify Razorpay payment : api/order/verify-payment
+export const verifyPayment = async (req, res) => {
+    try {
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderDbId } = req.body;
+        
+        // ✅ Verify payment signature
+        const crypto = await import('crypto');
+        const expectedSignature = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+            .update(razorpay_order_id + "|" + razorpay_payment_id)
+            .digest('hex');
+
+        if (expectedSignature === razorpay_signature) {
+            // Payment is verified, update order
+            await Order.findByIdAndUpdate(orderDbId, {
+                isPaid: true,
+                paymentId: razorpay_payment_id,
+                razorpayOrderId: razorpay_order_id
+            });
+
+            res.status(200).json({ 
+                message: "Payment verified successfully", 
+                success: true 
+            });
+        } else {
+            res.status(400).json({ 
+                message: "Invalid payment signature", 
+                success: false 
+            });
+        }
+    } catch (error) {
+        console.error('Payment verification error:', error);
+        res.status(500).json({ 
+            message: "Payment verification failed", 
             error: error.message 
         });
     }
@@ -142,11 +165,12 @@ export const getUserOrders = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
 //get all orders for admin : api/order/seller
 export const getAllOrders = async (req, res) => {
     try {
         const orders = await Order.find({
-            $or: [{ paymentType: "COD" }, { isPaid: false }]
+            $or: [{ paymentType: "COD" }, { isPaid: true }] // ✅ FIXED: Show paid orders for seller
         }).populate("items.product").populate("address").sort({ createdAt: -1 });
         res.status(200).json({ orders, success: true });
     } catch (error) {
