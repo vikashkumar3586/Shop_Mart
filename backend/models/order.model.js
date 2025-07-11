@@ -2,13 +2,13 @@ import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema({
     userId:{
-        type:String,
+        type:mongoose.Schema.Types.ObjectId,
         required:true,
         ref: "User"
     },
     items:[{
         product:{
-            type: String,
+            type: mongoose.Schema.Types.ObjectId,
             ref: "Product",
             required: true
         },
@@ -28,20 +28,24 @@ const orderSchema = new mongoose.Schema({
     },
     status:{
         type: String,
-        // enum: ["Pending", "Shipped", "Delivered", "Cancelled"],
-        default: "Order Placed"
+        enum: ["Processing", "Shipped", "Delivered", "Cancelled"],
+        default: "Processing"
     },
     paymentType:{
         type: String,
-        // enum: ["COD", "Online"],
+        enum: ["COD", "Online"],
         // default: "COD",
         required: true
+    },
+    paymentId: {
+        type: String,
+        default: null
     },
     isPaid:{
         type: Boolean,
         required: true,
         default: false
     }
-},{timestamps: true});
+},{ timestamps: true });
 const Order = mongoose.model("Order", orderSchema);
 export default Order;

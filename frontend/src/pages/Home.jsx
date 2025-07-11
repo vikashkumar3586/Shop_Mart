@@ -3,13 +3,11 @@ import { AppContext } from '../context/AppContext';
 import BestSeller from "../components/BestSeller";
 import Category from "../components/Category";
 import Hero from "../components/Hero";
-import NewsLetter from "../components/NewsLetter";
 
 const Home = () => {
     const { products, fetchProducts } = useContext(AppContext);
   
   useEffect(() => {
-    // ✅ Add error handling
     const loadProducts = async () => {
       try {
         await fetchProducts();
@@ -25,7 +23,7 @@ const Home = () => {
       <Hero />
       <Category />
       <BestSeller />
-      <NewsLetter />
+      
     </div>
   )
 }

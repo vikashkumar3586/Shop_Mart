@@ -69,9 +69,6 @@ const ProductList = () => {
                                         <td className="px-4 py-3">
                                             <label className="relative inline-flex items-center cursor-pointer text-gray-900 gap-3">
                                                 <input
-                                                    //     onClick={()=> toogleStock(product._id, !product.inStock)}
-                                                    // checked={product.inStock}
-                                                    // type="checkbox" className="sr-only peer" defaultChecked={product.inStock} 
                                                     type="checkbox"
                                                     checked={product.inStock}
                                                     onChange={() => toogleStock(product._id, !product.inStock)}
@@ -92,4 +89,4 @@ const ProductList = () => {
     );
 };
 
-export default ProductList
+export default ProductList;

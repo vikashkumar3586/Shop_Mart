@@ -131,8 +131,6 @@ const placeOrder = async() => {
         if (!selectedAddress) {
             return toast.error("Please select an address");
         }
-        
-        //place order with cod
         if (paymentOption === 'COD') {
             const { data } = await axios.post('/api/order/cod', {
                 items: cartArray.map(item => ({
@@ -149,7 +147,7 @@ const placeOrder = async() => {
                 toast.error(data.message);
             }
         }
-        // ✅ UPDATED: Replace Stripe with Razorpay
+        
         else {
             const { data } = await axios.post('/api/order/online', {
                 items: cartArray.map((item) => ({
@@ -160,17 +158,16 @@ const placeOrder = async() => {
             });
             
             if (data.success) {
-                // ✅ NEW: Razorpay integration
                 const options = {
-                    key: data.key, // Razorpay key from backend
-                    amount: data.amount, // Amount in paise
+                    key: data.key, 
+                    amount: data.amount,
                     currency: data.currency,
                     name: "Shop Mart",
                     description: "Order Payment",
-                    image: "/logo.png", // Optional: Your logo
-                    order_id: data.orderId, // Razorpay order ID
+                    image: "/logo.png", 
+                    order_id: data.orderId,
                     handler: async (response) => {
-                        // ✅ Payment success - verify payment
+                        
                         try {
                             const verifyResult = await axios.post('/api/order/verify-payment', {
                                 razorpay_order_id: response.razorpay_order_id,
@@ -200,7 +197,7 @@ const placeOrder = async() => {
                         address: `${selectedAddress.street}, ${selectedAddress.city}`
                     },
                     theme: {
-                        color: "#6366f1" // Indigo color to match your theme
+                        color: "#6366f1" 
                     },
                     modal: {
                         ondismiss: () => {
@@ -209,7 +206,6 @@ const placeOrder = async() => {
                     }
                 };
 
-                // ✅ Create Razorpay instance and open payment modal
                 const rzp = new window.Razorpay(options);
                 rzp.open();
                 
@@ -229,7 +225,6 @@ const placeOrder = async() => {
     }
 }
 
-// ...rest of your existing code...
 
     return products.length > 0 && cartItems ? (
         <div className="flex flex-col md:flex-row py-16 max-w-6xl w-full px-6 mx-auto">

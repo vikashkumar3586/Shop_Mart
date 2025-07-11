@@ -1,37 +1,21 @@
 import { assets } from '../assets/assets';
+import NewsLetter from './NewsLetter';
 
 const Footer = () => {
-    const linkSections = [
-        {
-            title: "Quick Links",
-            links: [
-                { name: "Home", href: "/" },
-                { name: "Best Sellers", href: "/products" },
-                { name: "Offers & Deals", href: "/products" },
-                { name: "About Us", href: "/about" },
-                { name: "Contact Us", href: "/contact" }
-            ]
-        },
-        {
-            title: "Customer Support",
-            links: [
-                { name: "Delivery Info", href: "/delivery" },
-                { name: "Return & Refund", href: "/returns" },
-                { name: "Payment Options", href: "/payments" },
-                { name: "Track Order", href: "/my-orders" },
-                { name: "Help Center", href: "/help" }
-            ]
-        },
-        {
-            title: "Company",
-            links: [
-                { name: "About ShopMart", href: "/about" },
-                { name: "Careers", href: "/careers" },
-                { name: "Privacy Policy", href: "/privacy" },
-                { name: "Terms of Service", href: "/terms" },
-                { name: "Seller Portal", href: "/seller" }
-            ]
-        }
+    const quickLinks = [
+        { name: "Home", href: "/" },
+        { name: "Products", href: "/products" },
+        { name: "My Orders", href: "/my-orders" },
+        { name: "About", href: "/about" },
+        { name: "Contact", href: "/contact" }
+    ];
+
+    const supportLinks = [
+        { name: "Help Center", href: "/help" },
+        { name: "Delivery Info", href: "/delivery" },
+        { name: "Returns", href: "/returns" },
+        { name: "Track Order", href: "/my-orders" },
+        { name: "Seller Portal", href: "/seller" }
     ];
 
     const socialLinks = [
@@ -57,7 +41,7 @@ const Footer = () => {
             name: "Instagram",
             icon: (
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 6.62 5.367 11.987 11.988 11.987s11.987-5.367 11.987-11.987C24.014 5.367 18.647.001 12.017.001zM8.449 16.988c-2.508 0-4.541-2.033-4.541-4.541s2.033-4.541 4.541-4.541 4.541 2.033 4.541 4.541-2.033 4.541-4.541 4.541zm7.119 0c-2.508 0-4.541-2.033-4.541-4.541s2.033-4.541 4.541-4.541 4.541 2.033 4.541 4.541-2.033 4.541-4.541 4.541z"/>
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                 </svg>
             ),
             href: "#"
@@ -74,28 +58,28 @@ const Footer = () => {
     ];
 
     return (
-        <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+        <footer className="bg-gray-900 text-white mt-16">
             {/* ✅ Main Footer Content */}
-            <div className="max-w-7xl mx-auto px-6 md:px-16 lg:px-24 xl:px-32 py-16">
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
+            <div className="max-w-7xl mx-auto px-6 md:px-16 lg:px-24 xl:px-32 py-12">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     
                     {/* ✅ Brand Section */}
-                    <div className="lg:col-span-1">
-                        <div className="flex items-center gap-3 mb-6">
-                            <img src={assets.ShopIcon} alt="Shop Mart" className="w-10 h-10" />
-                            <h2 className="font-bold text-2xl text-orange-400">Shop Mart</h2>
+                    <div className="md:col-span-1">
+                        <div className="flex items-center gap-3 mb-4">
+                            <img src={assets.ShopIcon} alt="Shop Mart" className="w-8 h-8" />
+                            <h2 className="font-bold text-xl text-orange-400">Shop Mart</h2>
                         </div>
-                        <p className="text-gray-300 mb-6 leading-relaxed">
-                            Your trusted digital marketplace for hassle-free grocery shopping. From daily essentials to exclusive deals, we deliver convenience right to your doorstep.
+                        <p className="text-gray-400 text-sm mb-4 leading-relaxed">
+                            Your trusted marketplace for quality products and seamless shopping experience.
                         </p>
                         
                         {/* ✅ Social Media Links */}
-                        <div className="flex space-x-4">
+                        <div className="flex space-x-3">
                             {socialLinks.map((social, index) => (
                                 <a
                                     key={index}
                                     href={social.href}
-                                    className="w-10 h-10 bg-gray-700 hover:bg-orange-500 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110"
+                                    className="w-8 h-8 bg-gray-700 hover:bg-orange-500 rounded-full flex items-center justify-center transition-colors duration-200"
                                     aria-label={social.name}
                                 >
                                     {social.icon}
@@ -104,62 +88,59 @@ const Footer = () => {
                         </div>
                     </div>
 
-                    {/* ✅ Links Sections */}
-                    {linkSections.map((section, index) => (
-                        <div key={index} className="lg:col-span-1">
-                            <h3 className="font-semibold text-lg text-white mb-6 border-b border-orange-400 pb-2 inline-block">
-                                {section.title}
-                            </h3>
-                            <ul className="space-y-3">
-                                {section.links.map((link, i) => (
-                                    <li key={i}>
+                    {/* ✅ Quick Links & Support Links - 2 Columns on Mobile */}
+                    <div className="md:col-span-2 grid grid-cols-2 gap-8">
+                        {/* Quick Links */}
+                        <div>
+                            <h3 className="font-semibold text-white mb-4">Quick Links</h3>
+                            <ul className="space-y-2">
+                                {quickLinks.map((link, index) => (
+                                    <li key={index}>
                                         <a 
                                             href={link.href} 
-                                            className="text-gray-300 hover:text-orange-400 transition-colors duration-200 text-sm flex items-center group"
+                                            className="text-gray-400 hover:text-orange-400 transition-colors duration-200 text-sm"
                                         >
-                                            <span className="w-0 group-hover:w-2 h-px bg-orange-400 transition-all duration-200 mr-0 group-hover:mr-2"></span>
                                             {link.name}
                                         </a>
                                     </li>
                                 ))}
                             </ul>
                         </div>
-                    ))}
-                </div>
 
-                {/* ✅ Newsletter Section */}
-                <div className="mt-16 pt-8 border-t border-gray-700">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        {/* Support Links */}
                         <div>
-                            <h3 className="text-xl font-semibold text-white mb-2">Stay Updated</h3>
-                            <p className="text-gray-300">Subscribe to get special offers, free giveaways, and exclusive deals.</p>
-                        </div>
-                        <div className="flex flex-col sm:flex-row gap-3">
-                            <input
-                                type="email"
-                                placeholder="Enter your email"
-                                className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent text-white placeholder-gray-400"
-                            />
-                            <button className="px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors duration-200 whitespace-nowrap">
-                                Subscribe
-                            </button>
+                            <h3 className="font-semibold text-white mb-4">Support</h3>
+                            <ul className="space-y-2">
+                                {supportLinks.map((link, index) => (
+                                    <li key={index}>
+                                        <a 
+                                            href={link.href} 
+                                            className="text-gray-400 hover:text-orange-400 transition-colors duration-200 text-sm"
+                                        >
+                                            {link.name}
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
                     </div>
-                </div>
 
+                    
+                    <NewsLetter />
+                </div>
             </div>
 
             {/* ✅ Bottom Copyright Section */}
-            <div className="bg-gray-900 border-t border-gray-700">
-                <div className="max-w-7xl mx-auto px-6 md:px-16 lg:px-24 xl:px-32 py-6">
-                    <div className="flex flex-col md:flex-row justify-between items-center">
-                        <p className="text-gray-400 text-sm mb-4 md:mb-0">
+            <div className="bg-gray-800 border-t border-gray-700">
+                <div className="max-w-7xl mx-auto px-6 md:px-16 lg:px-24 xl:px-32 py-4">
+                    <div className="flex flex-col md:flex-row justify-between items-center text-sm">
+                        <p className="text-gray-400 mb-2 md:mb-0">
                             © {new Date().getFullYear()} Shop Mart. All rights reserved.
                         </p>
-                        <div className="flex space-x-6 text-sm">
-                            <a href="/privacy" className="text-gray-400 hover:text-orange-400 transition-colors">Privacy Policy</a>
-                            <a href="/terms" className="text-gray-400 hover:text-orange-400 transition-colors">Terms of Service</a>
-                            <a href="/cookies" className="text-gray-400 hover:text-orange-400 transition-colors">Cookie Policy</a>
+                        <div className="flex space-x-4">
+                            <a href="/privacy" className="text-gray-400 hover:text-orange-400 transition-colors">Privacy</a>
+                            <a href="/terms" className="text-gray-400 hover:text-orange-400 transition-colors">Terms</a>
+                            <a href="/cookies" className="text-gray-400 hover:text-orange-400 transition-colors">Cookies</a>
                         </div>
                     </div>
                 </div>
