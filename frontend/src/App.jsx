@@ -20,11 +20,15 @@ import Orders from './pages/seller/Orders';
 import Loading from './components/Loading';
 import OrderDetails from './pages/seller/OrderDetails';
 import UserOrderDetails from './pages/UserOrderDetails';
+import PrivacyTerms from './pages/PrivacyTerms';
+import Delivery from './pages/DeliveryInfo';
+import Help from './pages/HelpCenter';
+import Cookies from './pages/Cookies';
 
 
 const App = () => {
 
-  const { 
+  const {
     isSeller,
     showUserLogin,
     isAuthLoading,
@@ -32,7 +36,7 @@ const App = () => {
   } = useContext(AppContext);
   const isSellerPath = useLocation().pathname.includes("seller");
 
-   if (isAuthLoading) {
+  if (isAuthLoading) {
     return <Loading message="Checking authentication..." />;
   }
 
@@ -61,6 +65,13 @@ const App = () => {
           <Route path="/loader" element={<Loading />} />
           <Route path="/add-address" element={<AddAddress />} />
           <Route path="/order/:orderId" element={<UserOrderDetails />} />
+          <Route path="/privacy" element={<PrivacyTerms />} />
+          <Route path="/terms" element={<PrivacyTerms />} />
+          <Route path="/delivery" element={<Delivery />} />
+          <Route path="/help" element={<Help />} />
+          <Route path="/cookies" element={<Cookies />} />
+
+          {/* Seller Routes */}
           <Route path="/seller" element={isSeller ? <SellerLayout /> : <SellerLogin />}>
             <Route index element={isSeller ? <AddProduct /> : null} />
             <Route path="product-list" element={isSeller ? <ProductList /> : null} />

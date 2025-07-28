@@ -59,11 +59,11 @@ const Footer = () => {
 
     return (
         <footer className="bg-gray-900 text-white mt-16">
-            {/* ✅ Main Footer Content */}
+        
             <div className="max-w-7xl mx-auto px-6 md:px-16 lg:px-24 xl:px-32 py-12">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     
-                    {/* ✅ Brand Section */}
+                
                     <div className="md:col-span-1">
                         <div className="flex items-center gap-3 mb-4">
                             <img src={assets.ShopIcon} alt="Shop Mart" className="w-8 h-8" />
@@ -73,7 +73,7 @@ const Footer = () => {
                             Your trusted marketplace for quality products and seamless shopping experience.
                         </p>
                         
-                        {/* ✅ Social Media Links */}
+                     
                         <div className="flex space-x-3">
                             {socialLinks.map((social, index) => (
                                 <a
@@ -88,9 +88,9 @@ const Footer = () => {
                         </div>
                     </div>
 
-                    {/* ✅ Quick Links & Support Links - 2 Columns on Mobile */}
+                   
                     <div className="md:col-span-2 grid grid-cols-2 gap-8">
-                        {/* Quick Links */}
+                        
                         <div>
                             <h3 className="font-semibold text-white mb-4">Quick Links</h3>
                             <ul className="space-y-2">
@@ -107,7 +107,7 @@ const Footer = () => {
                             </ul>
                         </div>
 
-                        {/* Support Links */}
+                       
                         <div>
                             <h3 className="font-semibold text-white mb-4">Support</h3>
                             <ul className="space-y-2">
@@ -130,7 +130,7 @@ const Footer = () => {
                 </div>
             </div>
 
-            {/* ✅ Bottom Copyright Section */}
+            
             <div className="bg-gray-800 border-t border-gray-700">
                 <div className="max-w-7xl mx-auto px-6 md:px-16 lg:px-24 xl:px-32 py-4">
                     <div className="flex flex-col md:flex-row justify-between items-center text-sm">
