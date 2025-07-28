@@ -24,6 +24,9 @@ import PrivacyTerms from './pages/PrivacyTerms';
 import Delivery from './pages/DeliveryInfo';
 import Help from './pages/HelpCenter';
 import Cookies from './pages/Cookies';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import Returns from './pages/Returns';
 
 
 const App = () => {
@@ -70,6 +73,9 @@ const App = () => {
           <Route path="/delivery" element={<Delivery />} />
           <Route path="/help" element={<Help />} />
           <Route path="/cookies" element={<Cookies />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/returns" element={<Returns />} />
 
           {/* Seller Routes */}
           <Route path="/seller" element={isSeller ? <SellerLayout /> : <SellerLogin />}>
