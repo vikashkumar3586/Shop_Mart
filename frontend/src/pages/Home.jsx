@@ -3,6 +3,7 @@ import { AppContext } from '../context/AppContext';
 import BestSeller from "../components/BestSeller";
 import Category from "../components/Category";
 import Hero from "../components/Hero";
+import Poster from '../components/Poster';
 
 const Home = () => {
     const { products, fetchProducts } = useContext(AppContext);
@@ -23,7 +24,8 @@ const Home = () => {
       <Hero />
       <Category />
       <BestSeller />
-      
+      <Poster />
+
     </div>
   )
 }

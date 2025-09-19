@@ -47,6 +47,7 @@ const Navbar = () => {
                         <path d="M10.836 10.615 15 14.695" stroke="#7A7B7D" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
                         <path clipRule="evenodd" d="M9.141 11.738c2.729-1.136 4.001-4.224 2.841-6.898S7.67.921 4.942 2.057C2.211 3.193.94 6.281 2.1 8.955s4.312 3.92 7.041 2.783" stroke="#7A7B7D" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
+                    
                 </div>
 
                
@@ -54,6 +55,9 @@ const Navbar = () => {
 
                     {/* ✅ Desktop Navigation */}
                     <div className="hidden md:flex items-center gap-6">
+                        <div className='hidden lg:flex items-center text-sm gap-2 border border-gray-300 px-4 py-2 rounded-full max-w-md flex-1 mx-8'>
+                            <Link to="/seller" className="hover:text-indigo-600 transition-colors text-color-gray-500">Seller Dashboard</Link>
+                        </div>
                         <Link to="/" className="hover:text-indigo-600 transition-colors">Home</Link>
                         <Link to="/products" className="hover:text-indigo-600 transition-colors">All Products</Link>
 
